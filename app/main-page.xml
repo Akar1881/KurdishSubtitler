@@ -1,0 +1,28 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="navigatingTo">
+    <ActionBar title="Kurdish Subtitler" />
+    
+    <ScrollView>
+        <StackLayout class="p-4">
+            <Label text="Selected Video:" class="text-lg mb-1" />
+            <Label text="{{ selectedVideo || 'No video selected' }}" class="text-gray-500 mb-4" textWrap="true" />
+            
+            <Label text="Selected Subtitle:" class="text-lg mb-1" />
+            <Label text="{{ selectedSubtitle || 'No subtitle selected' }}" class="text-gray-500 mb-4" textWrap="true" />
+            
+            <Label text="Selected Font:" class="text-lg mb-1" />
+            <Label text="{{ selectedFont || 'No font selected' }}" class="text-gray-500 mb-4" textWrap="true" />
+            
+            <Label text="Selected Logo:" class="text-lg mb-1" />
+            <Label text="{{ selectedLogo || 'No logo selected' }}" class="text-gray-500 mb-4" textWrap="true" />
+            
+            <Button text="Select Video" tap="{{ onSelectVideo }}" class="-primary mb-2" />
+            <Button text="Select Subtitle" tap="{{ onSelectSubtitle }}" class="-primary mb-2" />
+            <Button text="Select Font" tap="{{ onSelectFont }}" class="-primary mb-2" />
+            <Button text="Select Logo" tap="{{ onSelectLogo }}" class="-primary mb-2" />
+            <Button text="Start Burning" tap="{{ onStartBurning }}" class="-primary" isEnabled="{{ canStartBurning }}" />
+            
+            <ActivityIndicator busy="{{ isProcessing }}" class="mt-4" />
+            <Label text="{{ processingStatus }}" class="text-center mt-2" textWrap="true" />
+        </StackLayout>
+    </ScrollView>
+</Page>

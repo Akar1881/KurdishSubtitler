@@ -1,0 +1,154 @@
+
+### **Prompt for Kurdish Subtitler: Burn Hardcode to Video**
+
+#### **Objective**
+Develop a NativeScript Android application named **Kurdish Subtitler** that burns hardcoded subtitles onto a video. Users will:
+1. Select a video file.
+2. Select a subtitle file (e.g., `.vtt`).
+3. Choose a font file for subtitles.
+4. Add a logo (`logo.png` with size `636x125`).
+5. Generate an output video stored in `/sdcard/KurdishSubtitler/outputs/`.
+
+#### **Features**
+1. **Welcome Screen**:
+   - Display: "Welcome to Kurdish Subtitler".
+   - Button: **Get Started**.
+2. **Permission Requests**:
+   - Guide users through granting required permissions:
+     - **Storage access**.
+   - Use NativeScript dialogs for allowing permissions.
+3. **Main Screen**:
+   - Buttons for:
+     - Selecting video.
+     - Selecting subtitle file.
+     - Choosing font.
+     - Choosing logo.
+     - Starting the burning process.
+4. **FFmpeg Integration**:
+   - Command to hardcode subtitles:
+     ```bash
+     ffmpeg -i "/path/to/input/video.mp4" \
+     -i "/path/to/logo.png" \
+     -filter_complex "[1:v]scale=636:125[logo];[0:v][logo]overlay=10:10[subt];[subt]subtitles='/path/to/subtitle.vtt':force_style='FontName=CustomFont,FontFile=/path/to/font.ttf,BorderStyle=1,Outline=1,OutlineColor=&H000000,Background=&H00000000'" \
+     -c:a copy "/sdcard/KurdishSubtitler/outputs/<videoname>_output.mp4"
+     ```
+   - Automatically name the output file: `<videoname>_output.mp4`.
+
+---
+
+### **Packages to Use**
+1. **NativeScript Core Packages**:
+   - `@nativescript/core` for UI and application logic.
+   - `nativescript-permissions` for requesting runtime permissions.
+2. **File Picker**:
+   - `nativescript-mediafilepicker` for selecting video, subtitle, font, and logo files.
+     - Install via:
+       ```bash
+       npm install nativescript-mediafilepicker
+       ```
+3. **FFmpeg Integration**:
+   - Use `nativescript-ffmpeg-plugin-fixed`:
+     - Install via:
+       ```bash
+       npm install nativescript-ffmpeg-plugin-fixed
+       ```
+
+---
+
+### **Steps to Implement**
+
+#### 1. **Welcome Screen**
+- Display a welcome message and a button **Get Started**.
+- Navigate to a permission request flow on button click.
+
+#### 2. **Permission Requests**
+- Check and request storage permissions:
+  - Use `nativescript-permissions` to request access:
+    ```javascript
+    import * as permissions from "nativescript-permissions";
+
+    permissions.requestPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE, "Storage access is required").then(() => {
+        console.log("Permission granted!");
+    }).catch(() => {
+        console.log("Permission denied!");
+    });
+    ```
+
+#### 3. **Main Screen UI**
+- Provide buttons for:
+  - **Select Video**: Opens a file picker for video files (`.mp4`).
+  - **Select Subtitle**: Opens a file picker for subtitle files (`.vtt`).
+  - **Select Font**: Opens a file picker for font files (`.ttf`).
+  - **Select Logo**: Opens a file picker for image files (`.png`).
+  - **Start Burning**: Executes the FFmpeg command.
+
+#### 4. **File Selection Logic**
+- Use `nativescript-mediafilepicker` for file selection:
+  ```javascript
+  import { Mediafilepicker } from 'nativescript-mediafilepicker';
+
+  const picker = new Mediafilepicker();
+  picker.openFilePicker({
+      android: {
+          extensions: ['.mp4', '.vtt', '.ttf', '.png'],
+      },
+      ios: {
+          extensions: ['public.movie', 'public.text', 'public.image'],
+      }
+  }).then((result) => {
+      console.log("Selected file: ", result.files[0]);
+  }).catch((error) => {
+      console.error("Error selecting file: ", error);
+  });
+  ```
+
+#### 5. **FFmpeg Execution**
+- Use `nativescript-ffmpeg-plugin-fixed` for burning subtitles:
+  ```javascript
+  import { FFmpeg } from "nativescript-ffmpeg-plugin-fixed";
+
+  const inputVideo = "/path/to/input/video.mp4";
+  const inputSubtitle = "/path/to/input/subtitle.vtt";
+  const inputFont = "/path/to/font.ttf";
+  const inputLogo = "/path/to/logo.png";
+  const outputVideo = "/sdcard/KurdishSubtitler/outputs/video_output.mp4";
+
+  const command = `-i ${inputVideo} -i ${inputLogo} -filter_complex "[1:v]scale=636:125[logo];[0:v][logo]overlay=10:10[subt];[subt]subtitles='${inputSubtitle}':force_style='FontName=CustomFont,FontFile=${inputFont},BorderStyle=1,Outline=1,OutlineColor=&H000000,Background=&H00000000'" -c:a copy ${outputVideo}`;
+  
+  FFmpeg.execute(command).then(() => {
+      console.log("Video processed successfully!");
+  }).catch((error) => {
+      console.error("Error processing video: ", error);
+  });
+  ```
+
+#### 6. **Output Directory Setup**
+- Ensure the output directory exists:
+  ```javascript
+  import * as fs from "@nativescript/core/file-system";
+
+  const outputsDir = fs.path.join(fs.knownFolders.documents().path, "KurdishSubtitler/outputs");
+  if (!fs.Folder.exists(outputsDir)) {
+      fs.Folder.fromPath(outputsDir);
+  }
+  ```
+
+#### 7. **Error Handling**
+- Provide error dialogs for missing files or unsupported formats using `@nativescript/core/ui/dialogs`:
+  ```javascript
+  import { alert } from "@nativescript/core/ui/dialogs";
+
+  alert({
+      title: "Error",
+      message: "Please select all required files.",
+      okButtonText: "OK"
+  });
+  ```
+
+#### 8. **Build and Test**
+- Test the application on an Android emulator or physical device.
+
+---
+
+### **Summary**
+This detailed guide helps create a NativeScript application that uses modern plugins (`nativescript-mediafilepicker` and `nativescript-ffmpeg-plugin-fixed`) for file selection and FFmpeg execution. It ensures a smooth user experience with proper permission handling, robust file selection, and subtitle burning functionality.

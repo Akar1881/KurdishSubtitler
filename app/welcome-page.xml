@@ -1,0 +1,16 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="navigatingTo">
+    <ActionBar title="Kurdish Subtitler" />
+    
+    <StackLayout class="p-4 items-center justify-center">
+        <Label text="Welcome to Kurdish Subtitler" class="text-3xl text-center mb-4" />
+        <Label text="This app needs storage access permission to:" class="text-lg mb-2" />
+        <StackLayout class="mb-4">
+            <Label text="• Select video files" class="text-md" />
+            <Label text="• Choose subtitle files" class="text-md" />
+            <Label text="• Select custom fonts" class="text-md" />
+            <Label text="• Save processed videos" class="text-md" />
+        </StackLayout>
+        <ActivityIndicator busy="{{ isCheckingPermissions }}" class="mb-4" />
+        <Button text="Get Started" tap="{{ onGetStarted }}" class="-primary" isEnabled="{{ !isCheckingPermissions }}" />
+    </StackLayout>
+</Page>
